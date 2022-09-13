@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">WeatherJava</string>
+
+    <string name="search_place">Search Places</string>
+    <string name="demo_date">12 sept 9:00 AM</string>
+    <string name="defaults_numbers">100</string>
+    <string name="pressure">Pressure</string>
+    <string name="max_temp">Max Temp</string>
+    <string name="humidity">Humidity</string>
+    <string name="min_tempt">Min Temp</string>
+    <string name="wind_speed">Wind Speed</string>
+    <string name="temperature_in_f">Temperature in f</string>
+    <string name="dat">Max tem</string>
+    <string name="night">Night 9</string>
+    <string name="min_temp">16°C</string>
+    <string name="feels_alike">feels a like</string>
+    <string name="weather_type">Drizzle</string>
+    <string name="sunrise">Sunrise</string>
+    <string name="sunset">Sunset</string>
+</resources>

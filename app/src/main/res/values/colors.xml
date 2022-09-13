@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="statusBarCol">#5A7FEB</color>
+    <color name="thunderstrom">#1361FD</color>
+    <color name="drizzle">#526FA8</color>
+    <color name="rain">#0E8EFF</color>
+    <color name="snow">#987CFF</color>
+    <color name="atomsphere">#A8B4CC</color>
+    <color name="clear">#FF9D6F</color>
+    <color name="clouds">#454A4C</color>
+</resources>
