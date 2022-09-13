@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">WeatherJava</string>
+    <string name="app_name">Weather App</string>
 
     <string name="search_place">Search Places</string>
     <string name="demo_date">12 sept 9:00 AM</string>

@@ -51,7 +51,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 
-import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity {
     EditText et_get_City_Name;
@@ -103,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
         }else {
             fetchWeather();
         }
-
 
         et_get_City_Name.setOnClickListener(new View.OnClickListener() {
             @Override
