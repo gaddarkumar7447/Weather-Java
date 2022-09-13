@@ -1,14 +1,24 @@
 package com.example.weatherjava;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Insets;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -29,6 +39,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -36,18 +47,21 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 
 import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity {
     EditText et_get_City_Name;
-    TextView tv_date_and_time, tv_day_max_temp, tv_day_min_temp, tv_temp, tv_feels_like,
-            tv_weather_type, tv_pressure, tv_humidity, tv_wind_speed, tv_sunrise, tv_sunset_speed, tv_temp_farenhite;
+    TextView tv_date_and_time, tv_day_max_temp, tv_day_min_temp, tv_temp, tv_feels_like, tv_weather_type, tv_pressure, tv_humidity, tv_wind_speed, tv_sunrise, tv_sunset_speed, tv_temp_farenhite;
     ImageView iv_weather_icon, iv_weather_bg;
     ProgressBar pb_loading;
     String cityName;
-    RelativeLayout rl_sub_layout;
+    LocationManager locationManager;
+    int PERMISSION_CODE = 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,25 +83,77 @@ public class MainActivity extends AppCompatActivity {
         iv_weather_icon = findViewById(R.id.iv_weather_icon);
         pb_loading = findViewById(R.id.pb_loading);
         iv_weather_bg = findViewById(R.id.iv_weather_bg);
+
+
+
+
         getWindow().setStatusBarColor(ContextCompat.getColor(this,R.color.statusBarCol));
 
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},PERMISSION_CODE);
+        }
+        Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+        cityName = getCityName(location.getLongitude(), location.getLatitude());
+
+        et_get_City_Name.setText(cityName);
+        if (et_get_City_Name == null){
+            Toast.makeText(MainActivity.this, "Your city not found", Toast.LENGTH_SHORT).show();
+        }else {
+            fetchWeather();
+        }
 
 
         et_get_City_Name.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 cityName = et_get_City_Name.getText().toString().trim();
-//                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                 if (cityName.isEmpty()){
                     et_get_City_Name.setError("Enter cite name");
                 }else {
-                    //imm.hideSoftInputFromWindow(et_get_City_Name.getWindowToken(), 0);
                     fetchWeather();
                 }
             }
         });
         
     }
+
+    private String getCityName(double longitude, double latitude){
+        String cityName = "Not Found";
+        Geocoder geocoder = new Geocoder(getBaseContext(), Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(latitude,longitude,10);
+            for (Address ad: addresses){
+                if (ad!=null){
+                    String city = ad.getLocality();
+                    if (city != null && !city.equals("")){
+                        cityName = city;
+                    }else {
+                        Log.d("TAG","City not found");
+                    }
+                }
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        return cityName;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_CODE){
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
+            }else {
+                Toast.makeText(this, "Please give me permission", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        }
+    }
+
+
     public void fetchWeather(){
         String apiKey = "08b62ac5227740100736c05653942275";
         String url = "https://api.openweathermap.org/data/2.5/weather?q="+cityName+"&appid="+apiKey;
