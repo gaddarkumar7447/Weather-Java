@@ -56,10 +56,11 @@ public class MainActivity extends AppCompatActivity {
     EditText et_get_City_Name;
     TextView tv_date_and_time, tv_day_max_temp, tv_day_min_temp, tv_temp, tv_feels_like, tv_weather_type, tv_pressure, tv_humidity, tv_wind_speed, tv_sunrise, tv_sunset_speed, tv_temp_farenhite;
     ImageView iv_weather_icon, iv_weather_bg;
-    ProgressBar pb_loading;
     String cityName;
     LocationManager locationManager;
     int PERMISSION_CODE = 1;
+    ProgressBar progressBar;
+    int a = 0;
 
 
     @Override
@@ -80,12 +81,11 @@ public class MainActivity extends AppCompatActivity {
         tv_temp_farenhite = findViewById(R.id.tv_temp_farenhite);
         tv_date_and_time = findViewById(R.id.tv_date_and_time);
         iv_weather_icon = findViewById(R.id.iv_weather_icon);
-        pb_loading = findViewById(R.id.pb_loading);
         iv_weather_bg = findViewById(R.id.iv_weather_bg);
+        //progressBar = findViewById(R.id.pb_loading);
 
 
-
-
+       // progressBar.setVisibility(View.VISIBLE);
         getWindow().setStatusBarColor(ContextCompat.getColor(this,R.color.statusBarCol));
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
         et_get_City_Name.setText(cityName);
         if (et_get_City_Name == null){
-            Toast.makeText(MainActivity.this, "Your city not found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "Your city not found,Please enter the city name", Toast.LENGTH_SHORT).show();
         }else {
             fetchWeather();
         }
@@ -119,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
 
     private String getCityName(double longitude, double latitude){
         String cityName = "Not Found";
+        //progressBar.setVisibility(View.INVISIBLE);
         Geocoder geocoder = new Geocoder(getBaseContext(), Locale.getDefault());
         try {
             List<Address> addresses = geocoder.getFromLocation(latitude,longitude,10);
@@ -153,8 +154,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void fetchWeather(){
-        String apiKey = "08b62ac5227740100736c05653942275";
+        String apiKey = "Enter here your API key";
         String url = "https://api.openweathermap.org/data/2.5/weather?q="+cityName+"&appid="+apiKey;
+        //progressBar.setVisibility(View.INVISIBLE);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
@@ -257,8 +259,6 @@ public class MainActivity extends AppCompatActivity {
                     String s = String.format("%1.1f",feel);
                     tv_feels_like.setText(String.valueOf(s)+"°C");
 
-
-
                 }catch (JSONException e){
                     e.getStackTrace();
                 }
@@ -268,8 +268,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 et_get_City_Name.setError("Enter valid city name");
+                //progressBar.setVisibility(View.INVISIBLE);
             }
         });
+        
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(jsonObjectRequest);
 
