@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     LocationManager locationManager;
     int PERMISSION_CODE = 1;
     ProgressBar progressBar;
-    int a = 0;
+    ProgressDialog dialog;
 
 
     @Override
@@ -84,6 +84,9 @@ public class MainActivity extends AppCompatActivity {
         iv_weather_bg = findViewById(R.id.iv_weather_bg);
         //progressBar = findViewById(R.id.pb_loading);
 
+        dialog = new ProgressDialog(MainActivity.this);
+        dialog.setMessage("Fetching weather...");
+        dialog.show();
 
        // progressBar.setVisibility(View.VISIBLE);
         getWindow().setStatusBarColor(ContextCompat.getColor(this,R.color.statusBarCol));
@@ -128,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
                     String city = ad.getLocality();
                     if (city != null && !city.equals("")){
                         cityName = city;
+                        dialog.dismiss();
                     }else {
                         Log.d("TAG","City not found");
                     }
@@ -145,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == PERMISSION_CODE){
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                 Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
             }else {
                 Toast.makeText(this, "Please give me permission", Toast.LENGTH_SHORT).show();
                 finish();
@@ -154,14 +159,15 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void fetchWeather(){
-        String apiKey = "Enter here your API key";
+        String apiKey = "put here your key";
         String url = "https://api.openweathermap.org/data/2.5/weather?q="+cityName+"&appid="+apiKey;
-        //progressBar.setVisibility(View.INVISIBLE);
+
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onResponse(JSONObject response) {
                 try {
+                    dialog.dismiss();
                     JSONObject main_ob = response.getJSONObject("main");
                     JSONArray jsonArray = response.getJSONArray("weather");
                     JSONObject object = jsonArray.getJSONObject(0);
@@ -257,7 +263,7 @@ public class MainActivity extends AppCompatActivity {
 
                     double feel = Double.parseDouble(feelLikes) - 273.15;
                     String s = String.format("%1.1f",feel);
-                    tv_feels_like.setText(String.valueOf(s)+"°C");
+                    tv_feels_like.setText("Feel likes "+String.valueOf(s)+"°C");
 
                 }catch (JSONException e){
                     e.getStackTrace();
@@ -268,7 +274,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 et_get_City_Name.setError("Enter valid city name");
-                //progressBar.setVisibility(View.INVISIBLE);
+                dialog.dismiss();
             }
         });
         
